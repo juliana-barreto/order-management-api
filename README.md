@@ -1,4 +1,4 @@
-🛒 E-commerce API 
+# 🛒 E-commerce API 
 API RESTful desenvolvida como projeto final do curso de Desenvolvimento Back-end do SENAI. O sistema gerencia o fluxo de clientes e pedidos de um e-commerce, aplicando boas práticas de arquitetura, validações de negócio e tratamento de erros.
 
 Este projeto tem como objetivo demonstrar a construção de uma aplicação robusta utilizando Java e Spring Boot. O sistema permite o cadastro de clientes e a realização de pedidos com cálculo automático de valores, garantindo a integridade dos dados através de relacionamentos em banco de dados relacional.
