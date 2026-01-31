@@ -1,21 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <artifactId>ecommerce</artifactId>
+  <artifactId>spring-ecommerce</artifactId>
   <build>
     <plugins>
-      <plugin>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>
-              <artifactId>lombok</artifactId>
-              <groupId>org.projectlombok</groupId>
-            </exclude>
-          </excludes>
-        </configuration>
-        <groupId>org.springframework.boot</groupId>
-      </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
@@ -28,18 +15,21 @@
         </configuration>
         <groupId>org.apache.maven.plugins</groupId>
       </plugin>
+      <plugin>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>
+              <artifactId>lombok</artifactId>
+              <groupId>org.projectlombok</groupId>
+            </exclude>
+          </excludes>
+        </configuration>
+        <groupId>org.springframework.boot</groupId>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
-    <dependency>
-      <artifactId>mariadb-java-client</artifactId>
-      <groupId>org.mariadb.jdbc</groupId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <artifactId>spring-boot-h2console</artifactId>
-      <groupId>org.springframework.boot</groupId>
-    </dependency>
     <dependency>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
       <groupId>org.springframework.boot</groupId>
@@ -49,9 +39,14 @@
       <groupId>org.springframework.boot</groupId>
     </dependency>
     <dependency>
-      <artifactId>mariadb-java-client</artifactId>
-      <groupId>org.mariadb.jdbc</groupId>
+      <artifactId>postgresql</artifactId>
+      <groupId>org.postgresql</groupId>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <artifactId>lombok</artifactId>
+      <groupId>org.projectlombok</groupId>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <artifactId>spring-boot-starter-data-jpa-test</artifactId>
@@ -64,31 +59,27 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <artifactId>lombok</artifactId>
-      <groupId>org.projectlombok</groupId>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
       <groupId>org.springdoc</groupId>
       <version>3.0.1</version>
     </dependency>
   </dependencies>
-  <description>Demo project for Spring Boot</description>
+  <description>E-commerce project developed with Spring Boot</description>
   <developers>
     <developer/>
   </developers>
-  <groupId>com.example</groupId>
+  <groupId>com.juliana-barreto</groupId>
   <licenses>
     <license/>
   </licenses>
   <modelVersion>4.0.0</modelVersion>
-  <name>E-Commerce</name>
+  <name>Ecommerce</name>
   <parent>
     <artifactId>spring-boot-starter-parent</artifactId>
     <groupId>org.springframework.boot</groupId>
     <relativePath/>
-    <version>4.0.2</version> <!-- lookup parent from repository -->
+    <version>4.0.2</version>
+    <!--  lookup parent from repository  -->
   </parent>
   <properties>
     <java.version>21</java.version>
@@ -100,7 +91,5 @@
     <url/>
   </scm>
   <url/>
-
   <version>0.0.1-SNAPSHOT</version>
-
 </project>

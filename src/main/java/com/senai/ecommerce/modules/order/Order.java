@@ -1,6 +1,5 @@
 package com.senai.ecommerce.modules.order;
 
-import com.senai.ecommerce.modules.user.OrderStatus;
 import com.senai.ecommerce.modules.user.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -13,7 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
