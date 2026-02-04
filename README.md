@@ -1,4 +1,4 @@
-# E-commerce Backend API - API RESTful de Gestão de Pedidos 
+# Sistema de Gestão de Pedidos
 
 <div align="center">
     <img src="https://img.shields.io/badge/Java-ED8B00?style=flat-square&logo=openjdk&logoColor=white" />
@@ -12,7 +12,7 @@
 
 ## Sobre o Projeto
 
-O **E-commerce Backend API** é uma aplicação robusta desenvolvida em **Java** com o framework **Spring Boot**, focada na construção de serviços RESTful escaláveis para gestão de vendas.
+O **Sistema de Gestão de Pedidos** é uma aplicação robusta desenvolvida em **Java** com o framework **Spring Boot**, focada na construção de serviços RESTful escaláveis para gestão de vendas.
 
 Este projeto vai além do CRUD básico, implementando **regras de negócio reais** de um e-commerce, como cálculo automático de totais de pedidos, fluxo de status de entrega, relacionamentos complexos entre entidades e **tratamento global de exceções**. O objetivo é demonstrar domínio sobre a arquitetura em camadas e boas práticas de desenvolvimento backend.
 
