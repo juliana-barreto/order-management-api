@@ -1,11 +1,11 @@
 # Sistema de Gestão de Pedidos
+>API RESTful para orquestração de vendas e fluxo de entregas, focado em regras de negócio complexas e integridade transacional.
 
 <div align="center">
-    <img src="https://img.shields.io/badge/Java-ED8B00?style=flat-square&logo=openjdk&logoColor=white" />
-    <img src="https://img.shields.io/badge/Spring_Boot-6DB33F?style=flat-square&logo=spring-boot&logoColor=white" />
-    <img src="https://img.shields.io/badge/Swagger-85EA2D?style=flat-square&logo=swagger&logoColor=black" />
-    <img src="https://img.shields.io/badge/PostgreSQL-316192?style=flat-square&logo=postgresql&logoColor=white" />
-    <img src="https://img.shields.io/badge/Status-Concluído-brightgreen?style=flat-square" />
+  <img src="https://img.shields.io/badge/language-Java-orange" />
+  <img src="https://img.shields.io/badge/framework-Spring_Boot-green" />
+  <img src="https://img.shields.io/badge/database-PostgreSQL-blue" />
+  <img src="https://img.shields.io/badge/docs-Swagger-brightgreen" />
 </div>
 
 ---
