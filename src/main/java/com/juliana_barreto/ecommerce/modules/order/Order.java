@@ -17,10 +17,13 @@ import jakarta.persistence.Table;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,12 +33,15 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Order implements Serializable {
 
   @Serial
   private static final long serialVersionUID = 1L;
 
+  @EqualsAndHashCode.Include
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -43,9 +49,9 @@ public class Order implements Serializable {
   @Column(nullable = false, precision = 10, scale = 2)
   private BigDecimal orderTotal;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMI")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
   @Column(nullable = false)
-  private LocalDateTime moment = LocalDateTime.now();
+  private Instant moment = Instant.now();
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
@@ -55,6 +61,8 @@ public class Order implements Serializable {
   @JoinColumn(name = "client_id", nullable = false)
   private User client;
 
+  @Builder.Default
+  @Setter(AccessLevel.NONE)
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<OrderItem> items = new ArrayList<>();
 

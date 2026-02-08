@@ -28,15 +28,14 @@ public class OrderService {
 
   public Order create(Order order) {
     // Basic validation
-    if (order.getUser() == null || order.getUser().getId() == null) {
+    if (order.getClient() == null || order.getClient().getId() == null) {
       throw new IllegalArgumentException("The order must be associated with an existing user.");
     }
 
     // Fetch the real user from the database to ensure consistency
-    User user = userRepository.findById(order.getUser().getId())
+    User client = userRepository.findById(order.getClient().getId())
         .orElseThrow(() -> new ResourceNotFoundException("Order user not found."));
-
-    order.setUser(user);
+    order.setClient(client);
 
     // Associate items with the order and calculate total
     if (order.getItems() != null) {
