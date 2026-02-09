@@ -34,7 +34,8 @@ public class User implements Serializable {
 
   @Serial
   private static final long serialVersionUID = 1L;
-
+  
+  @EqualsAndHashCode.Include
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -48,7 +49,6 @@ public class User implements Serializable {
   @Column(nullable = false, unique = true)
   private String phone;
 
-  @EqualsAndHashCode.Include
   @Column(nullable = false, unique = true, length = 11)
   private String cpf;
 
