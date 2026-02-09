@@ -7,6 +7,7 @@ import com.juliana_barreto.ecommerce.modules.order.OrderRepository;
 import com.juliana_barreto.ecommerce.modules.order.OrderStatus;
 import com.juliana_barreto.ecommerce.modules.order_item.OrderItem;
 import com.juliana_barreto.ecommerce.modules.order_item.OrderItemRepository;
+import com.juliana_barreto.ecommerce.modules.payment.Payment;
 import com.juliana_barreto.ecommerce.modules.product.Product;
 import com.juliana_barreto.ecommerce.modules.product.ProductRepository;
 import com.juliana_barreto.ecommerce.modules.user.User;
@@ -132,11 +133,36 @@ public class TestConfig implements CommandLineRunner {
 
     productRepository.saveAll(List.of(p1, p2, p3, p4, p5));
 
-    OrderItem oi1 = new OrderItem(o1, p1, 2, p1.getPrice());
-    OrderItem oi2 = new OrderItem(o1, p3, 1, p3.getPrice());
-    OrderItem oi3 = new OrderItem(o2, p3, 2, p3.getPrice());
-    OrderItem oi4 = new OrderItem(o3, p5, 2, p5.getPrice());
+    OrderItem oi1 = OrderItem.builder()
+        .order(o1)
+        .product(p1)
+        .quantity(2)
+        .unitPrice(p1.getPrice())
+        .build();
+
+    OrderItem oi2 = OrderItem.builder()
+        .order(o1)
+        .product(p3)
+        .quantity(1)
+        .unitPrice(p3.getPrice())
+        .build();
+
+    OrderItem oi3 = OrderItem.builder()
+        .order(o2)
+        .product(p3)
+        .quantity(2)
+        .unitPrice(p3.getPrice())
+        .build();
+
+    OrderItem oi4 = OrderItem.builder()
+        .order(o3)
+        .product(p5)
+        .quantity(2)
+        .unitPrice(p5.getPrice())
+        .build();
 
     orderItemRepository.saveAll(List.of(oi1, oi2, oi3, oi4));
+
+    
   }
 }
