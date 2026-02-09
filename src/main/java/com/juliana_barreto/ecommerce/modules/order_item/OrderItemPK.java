@@ -1,4 +1,4 @@
-package com.juliana_barreto.ecommerce.modules.pk;
+package com.juliana_barreto.ecommerce.modules.order_item;
 
 import com.juliana_barreto.ecommerce.modules.order.Order;
 import com.juliana_barreto.ecommerce.modules.product.Product;

@@ -1,7 +1,7 @@
-package com.juliana_barreto.ecommerce.modules.order;
+package com.juliana_barreto.ecommerce.modules.order_item;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.juliana_barreto.ecommerce.modules.pk.OrderItemPK;
+import com.juliana_barreto.ecommerce.modules.order.Order;
 import com.juliana_barreto.ecommerce.modules.product.Product;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
@@ -9,7 +9,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import java.io.Serial;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
