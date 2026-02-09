@@ -66,4 +66,7 @@ public class OrderItem implements Serializable {
     id.setProduct(product);
   }
 
+  public BigDecimal getSubTotal() {
+    return unitPrice.multiply(BigDecimal.valueOf(quantity));
+  }
 }

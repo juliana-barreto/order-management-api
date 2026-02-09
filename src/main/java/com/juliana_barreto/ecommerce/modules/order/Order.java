@@ -71,4 +71,12 @@ public class Order implements Serializable {
 
   @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
   private Payment payment;
+
+  public BigDecimal getTotal() {
+    BigDecimal sum = BigDecimal.ZERO;
+    for (OrderItem item : items) {
+      sum = sum.add(item.getSubTotal());
+    }
+    return sum;
+  }
 }
