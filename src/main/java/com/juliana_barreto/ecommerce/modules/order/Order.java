@@ -14,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.io.Serial;
 import java.io.Serializable;
@@ -67,4 +68,7 @@ public class Order implements Serializable {
   @Builder.Default
   @OneToMany(mappedBy = "id.order", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<OrderItem> items = new HashSet<>();
+
+  @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Payment payment;
 }

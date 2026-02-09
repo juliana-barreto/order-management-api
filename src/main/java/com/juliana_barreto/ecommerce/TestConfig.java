@@ -7,7 +7,7 @@ import com.juliana_barreto.ecommerce.modules.order.OrderRepository;
 import com.juliana_barreto.ecommerce.modules.order.OrderStatus;
 import com.juliana_barreto.ecommerce.modules.order_item.OrderItem;
 import com.juliana_barreto.ecommerce.modules.order_item.OrderItemRepository;
-import com.juliana_barreto.ecommerce.modules.payment.Payment;
+import com.juliana_barreto.ecommerce.modules.order.Payment;
 import com.juliana_barreto.ecommerce.modules.product.Product;
 import com.juliana_barreto.ecommerce.modules.product.ProductRepository;
 import com.juliana_barreto.ecommerce.modules.user.User;
@@ -163,6 +163,11 @@ public class TestConfig implements CommandLineRunner {
 
     orderItemRepository.saveAll(List.of(oi1, oi2, oi3, oi4));
 
-    
+    Payment pay1 = Payment.builder()
+        .moment(Instant.parse("2019-06-10T21:53:07Z"))
+        .build();
+
+    o1.setPayment(pay1);
+    orderRepository.save(o1);
   }
 }
