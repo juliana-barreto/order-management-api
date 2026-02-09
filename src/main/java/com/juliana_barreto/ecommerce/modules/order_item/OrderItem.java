@@ -9,6 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,9 +36,9 @@ public class OrderItem implements Serializable {
   @Getter
   @Setter
   @Column(nullable = false, precision = 10, scale = 2)
-  private Double unitPrice;
+  private BigDecimal unitPrice;
 
-  public OrderItem(Order order, Product product, Integer quantity, Double unitPrice) {
+  public OrderItem(Order order, Product product, Integer quantity, BigDecimal unitPrice) {
     this.id.setOrder(order);
     this.id.setProduct(product);
     this.quantity = quantity;

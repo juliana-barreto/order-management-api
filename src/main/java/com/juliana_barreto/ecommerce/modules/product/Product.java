@@ -1,8 +1,8 @@
 package com.juliana_barreto.ecommerce.modules.product;
 
 import com.juliana_barreto.ecommerce.modules.category.Category;
-import com.juliana_barreto.ecommerce.modules.order.OrderItem;
 import com.juliana_barreto.ecommerce.modules.order.Order;
+import com.juliana_barreto.ecommerce.modules.order_item.OrderItem;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,6 +16,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.AccessLevel;
@@ -51,7 +52,7 @@ public class Product implements Serializable {
   private String description;
 
   @Column(nullable = false, precision = 10, scale = 2)
-  private Double price;
+  private BigDecimal price;
 
   @Column(nullable = false)
   private String imgUrl;
@@ -66,12 +67,14 @@ public class Product implements Serializable {
 
   @Setter(AccessLevel.NONE)
   @Builder.Default
-  @OneToMany(mappedBy = "id.order", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "id.product", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<OrderItem> items = new HashSet<>();
 
-  public Set<Order> getOrders () {
+  public Set<Order> getOrders() {
     Set<Order> orders = new HashSet<>();
     for (OrderItem item : items) {
       orders.add(item.getOrder());
+    }
+    return orders;
   }
 }
