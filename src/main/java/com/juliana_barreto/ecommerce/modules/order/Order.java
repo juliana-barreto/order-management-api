@@ -1,6 +1,7 @@
 package com.juliana_barreto.ecommerce.modules.order;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.juliana_barreto.ecommerce.modules.order_item.OrderItem;
 import com.juliana_barreto.ecommerce.modules.user.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -18,9 +19,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -46,6 +45,7 @@ public class Order implements Serializable {
   @EqualsAndHashCode.Include
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Setter(AccessLevel.NONE)
   private Long id;
 
   @Column(nullable = false, precision = 10, scale = 2)

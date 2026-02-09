@@ -34,10 +34,11 @@ public class User implements Serializable {
 
   @Serial
   private static final long serialVersionUID = 1L;
-  
+
   @EqualsAndHashCode.Include
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Setter(AccessLevel.NONE)
   private Long id;
 
   @Column(nullable = false)

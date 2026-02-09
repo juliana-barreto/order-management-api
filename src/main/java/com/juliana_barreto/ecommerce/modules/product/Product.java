@@ -43,6 +43,7 @@ public class Product implements Serializable {
   @EqualsAndHashCode.Include
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Setter(AccessLevel.NONE)
   private Long Id;
 
   @Column(unique = true, nullable = false)
