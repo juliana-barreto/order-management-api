@@ -19,7 +19,9 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -61,31 +63,8 @@ public class Order implements Serializable {
   @JoinColumn(name = "client_id", nullable = false)
   private User client;
 
-  @Builder.Default
   @Setter(AccessLevel.NONE)
-  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<OrderItem> items = new ArrayList<>();
-
-  public void addItem(OrderItem item) {
-    this.items.add(item);
-    item.setOrder(this);
-    calculateTotal();
-  }
-
-  public void removeItem(OrderItem item) {
-    this.items.remove(item);
-    item.setOrder(null);
-    calculateTotal();
-  }
-
-  public void calculateTotal() {
-    var total = BigDecimal.ZERO;
-    for (OrderItem item : this.items) {
-      var quantity = BigDecimal.valueOf(item.getQuantity());
-      BigDecimal itemTotal = item.getUnitPrice().multiply(quantity);
-      total = total.add(itemTotal);
-    }
-    this.orderTotal = total;
-  }
-
+  @Builder.Default
+  @OneToMany(mappedBy = "id.order", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<OrderItem> items = new HashSet<>();
 }

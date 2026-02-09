@@ -1,6 +1,9 @@
 package com.juliana_barreto.ecommerce.modules.product;
 
 import com.juliana_barreto.ecommerce.modules.category.Category;
+import com.juliana_barreto.ecommerce.modules.order.OrderItem;
+import com.juliana_barreto.ecommerce.modules.order.Order;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.io.Serial;
 import java.io.Serializable;
@@ -52,11 +56,22 @@ public class Product implements Serializable {
   @Column(nullable = false)
   private String imgUrl;
 
-  @Builder.Default
   @Setter(AccessLevel.NONE)
+  @Builder.Default
   @ManyToMany
   @JoinTable(name = "tb_product_category",
       joinColumns = @JoinColumn(name = "product_id"),
       inverseJoinColumns = @JoinColumn(name = "category_id"))
   private Set<Category> categories = new HashSet<>();
+
+  @Setter(AccessLevel.NONE)
+  @Builder.Default
+  @OneToMany(mappedBy = "id.order", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<OrderItem> items = new HashSet<>();
+
+  public Set<Order> getOrders () {
+    Set<Order> orders = new HashSet<>();
+    for (OrderItem item : items) {
+      orders.add(item.getOrder());
+  }
 }
