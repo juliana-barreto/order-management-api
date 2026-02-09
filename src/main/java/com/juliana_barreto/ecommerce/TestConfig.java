@@ -3,9 +3,10 @@ package com.juliana_barreto.ecommerce;
 import com.juliana_barreto.ecommerce.modules.category.Category;
 import com.juliana_barreto.ecommerce.modules.category.CategoryRepository;
 import com.juliana_barreto.ecommerce.modules.order.Order;
-import com.juliana_barreto.ecommerce.modules.order.OrderItem;
 import com.juliana_barreto.ecommerce.modules.order.OrderRepository;
 import com.juliana_barreto.ecommerce.modules.order.OrderStatus;
+import com.juliana_barreto.ecommerce.modules.order_item.OrderItem;
+import com.juliana_barreto.ecommerce.modules.order_item.OrderItemRepository;
 import com.juliana_barreto.ecommerce.modules.product.Product;
 import com.juliana_barreto.ecommerce.modules.product.ProductRepository;
 import com.juliana_barreto.ecommerce.modules.user.User;
@@ -32,6 +33,9 @@ public class TestConfig implements CommandLineRunner {
 
   @Autowired
   private ProductRepository productRepository;
+
+  @Autowired
+  private OrderItemRepository orderItemRepository;
 
   @Override
   public void run(String... args) throws Exception {
@@ -132,5 +136,7 @@ public class TestConfig implements CommandLineRunner {
     OrderItem oi2 = new OrderItem(o1, p3, 1, p3.getPrice());
     OrderItem oi3 = new OrderItem(o2, p3, 2, p3.getPrice());
     OrderItem oi4 = new OrderItem(o3, p5, 2, p5.getPrice());
+
+    orderItemRepository.saveAll(List.of(oi1, oi2, oi3, oi4));
   }
 }
