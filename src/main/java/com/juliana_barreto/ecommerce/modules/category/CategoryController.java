@@ -28,29 +28,29 @@ public class CategoryController {
 
   @GetMapping
   @Operation(summary = "List all", description = "Returns the list of all registered categories")
-  public ResponseEntity<List<Category>> list() {
+  public ResponseEntity<List<CategoryDTO>> list() {
     return ResponseEntity.ok(categoryService.findAll());
   }
 
   @GetMapping("/{id}")
   @Operation(summary = "Find by ID", description = "Returns a specific category by its ID")
-  public ResponseEntity<Category> findById(@PathVariable Long id) {
+  public ResponseEntity<CategoryDTO> findById(@PathVariable Long id) {
     return ResponseEntity.ok(categoryService.findById(id));
   }
 
   @PostMapping
   @Operation(summary = "Create category", description = "Creates a new category")
-  public ResponseEntity<Category> create(@RequestBody Category category) {
-    Category newCategory = categoryService.create(category);
+  public ResponseEntity<CategoryDTO> create(@RequestBody CategoryDTO dto) {
+    CategoryDTO newDto = categoryService.create(dto);
     URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-        .path("/{id}").buildAndExpand(newCategory.getId()).toUri();
-    return ResponseEntity.created(uri).body(newCategory);
+        .path("/{id}").buildAndExpand(newDto.getId()).toUri();
+    return ResponseEntity.created(uri).body(newDto);
   }
 
   @PutMapping("/{id}")
   @Operation(summary = "Update category", description = "Updates category status")
-  public ResponseEntity<Category> update(@PathVariable Long id, @RequestBody Category category) {
-    return ResponseEntity.ok(categoryService.update(id, category));
+  public ResponseEntity<CategoryDTO> update(@PathVariable Long id, @RequestBody CategoryDTO dto) {
+    return ResponseEntity.ok(categoryService.update(id, dto));
   }
 
   @DeleteMapping("/{id}")

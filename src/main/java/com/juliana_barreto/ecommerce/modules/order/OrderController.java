@@ -28,35 +28,35 @@ public class OrderController {
 
   @GetMapping
   @Operation(summary = "List all", description = "Returns the list of all registered orders")
-  public ResponseEntity<List<Order>> list() {
+  public ResponseEntity<List<OrderDTO>> list() {
     return ResponseEntity.ok(orderService.findAll());
   }
 
   @GetMapping("/{id}")
   @Operation(summary = "Find by ID", description = "Returns a specific order by its ID")
-  public ResponseEntity<Order> findById(@PathVariable Long id) {
+  public ResponseEntity<OrderDTO> findById(@PathVariable Long id) {
     return ResponseEntity.ok(orderService.findById(id));
   }
 
   @PostMapping
   @Operation(summary = "Create order", description = "Creates a new order for an existing user")
-  public ResponseEntity<Order> create(@RequestBody Order order) {
-    Order newOrder = orderService.create(order);
+  public ResponseEntity<OrderDTO> create(@RequestBody OrderDTO dto) {
+    OrderDTO newDto = orderService.create(dto);
     URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-        .path("/{id}").buildAndExpand(newOrder.getId()).toUri();
-    return ResponseEntity.created(uri).body(newOrder);
+        .path("/{id}").buildAndExpand(newDto.getId()).toUri();
+    return ResponseEntity.created(uri).body(newDto);
   }
 
   @PutMapping("/{id}")
   @Operation(summary = "Update order", description = "Updates general order status")
-  public ResponseEntity<Order> update(@PathVariable Long id, @RequestBody Order order) {
-    return ResponseEntity.ok(orderService.update(id, order));
+  public ResponseEntity<OrderDTO> update(@PathVariable Long id, @RequestBody OrderDTO dto) {
+    return ResponseEntity.ok(orderService.update(id, dto));
   }
 
   @PatchMapping("/{id}/cancel")
   @Operation(summary = "Cancel order",
       description = "Cancels an order if it hasn't been shipped yet")
-  public ResponseEntity<Order> cancel(@PathVariable Long id) {
+  public ResponseEntity<OrderDTO> cancel(@PathVariable Long id) {
     return ResponseEntity.ok(orderService.cancel(id));
   }
 }

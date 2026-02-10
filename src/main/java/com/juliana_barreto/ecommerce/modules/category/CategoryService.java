@@ -2,6 +2,7 @@ package com.juliana_barreto.ecommerce.modules.category;
 
 import com.juliana_barreto.ecommerce.shared.exceptions.DatabaseException;
 import com.juliana_barreto.ecommerce.shared.exceptions.ResourceNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -17,32 +18,43 @@ public class CategoryService {
   }
 
   @Transactional(readOnly = true)
-  public List<Category> findAll() {
-    return categoryRepository.findAll();
+  public List<CategoryDTO> findAll() {
+    List<Category> entities = categoryRepository.findAll();
+    List<CategoryDTO> dtos = new ArrayList<>();
+    for (Category entity : entities) {
+      dtos.add(new CategoryDTO(entity));
+    }
+    return dtos;
   }
 
   @Transactional(readOnly = true)
-  public Category findById(Long id) {
-    return categoryRepository.findById(id)
+  public CategoryDTO findById(Long id) {
+    Category entity = categoryRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + id));
+    return new CategoryDTO(entity);
   }
 
   @Transactional
-  public Category create(Category category) {
-    if (category.getName() == null || category.getName().isBlank()) {
+  public CategoryDTO create(CategoryDTO dto) {
+    if (dto.getName() == null || dto.getName().isBlank()) {
       throw new IllegalArgumentException("Category name is mandatory.");
     }
-    return categoryRepository.save(category);
+    Category entity = new Category();
+    entity.setName(dto.getName());
+    entity = categoryRepository.save(entity);
+    return new CategoryDTO(entity);
   }
 
   @Transactional
-  public Category update(Long id, Category updatedCategory) {
-    Category existingCategory = findById(id);
+  public CategoryDTO update(Long id, CategoryDTO dto) {
+    Category entity = categoryRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + id));
 
-    if (updatedCategory.getName() != null && !updatedCategory.getName().isBlank()) {
-      existingCategory.setName(updatedCategory.getName());
+    if (dto.getName() != null && !dto.getName().isBlank()) {
+      entity.setName(dto.getName());
     }
-    return categoryRepository.save(existingCategory);
+    entity = categoryRepository.save(entity);
+    return new CategoryDTO(entity);
   }
 
   @Transactional

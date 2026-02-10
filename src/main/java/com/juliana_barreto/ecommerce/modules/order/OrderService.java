@@ -1,11 +1,13 @@
 package com.juliana_barreto.ecommerce.modules.order;
 
 import com.juliana_barreto.ecommerce.modules.order_item.OrderItem;
+import com.juliana_barreto.ecommerce.modules.order_item.OrderItemDTO;
 import com.juliana_barreto.ecommerce.modules.product.Product;
 import com.juliana_barreto.ecommerce.modules.product.ProductRepository;
 import com.juliana_barreto.ecommerce.modules.user.User;
 import com.juliana_barreto.ecommerce.modules.user.UserRepository;
 import com.juliana_barreto.ecommerce.shared.exceptions.ResourceNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,72 +27,87 @@ public class OrderService {
   }
 
   @Transactional(readOnly = true)
-  public List<Order> findAll() {
-    return orderRepository.findAll();
+  public List<OrderDTO> findAll() {
+    List<Order> entities = orderRepository.findAll();
+    List<OrderDTO> dtos = new ArrayList<>();
+    for (Order entity : entities) {
+      dtos.add(new OrderDTO(entity));
+    }
+    return dtos;
   }
 
   @Transactional(readOnly = true)
-  public Order findById(Long id) {
-    return orderRepository.findById(id)
+  public OrderDTO findById(Long id) {
+    Order entity = orderRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + id));
+    return new OrderDTO(entity);
   }
 
   @Transactional
-  public Order create(Order order) {
+  public OrderDTO create(OrderDTO dto) {
+    Order entity = new Order();
+
     // Validate and fetch Client
-    if (order.getClient() == null || order.getClient().getId() == null) {
+    if (dto.getClient() == null || dto.getClient().getId() == null) {
       throw new IllegalArgumentException("The order must be associated with an existing user.");
     }
-    User client = userRepository.findById(order.getClient().getId())
+    User client = userRepository.findById(dto.getClient().getId())
         .orElseThrow(() -> new ResourceNotFoundException("Client not found."));
-    order.setClient(client);
+    entity.setClient(client);
 
     // Process Items, linking and ensuring real price from DB
-    var items = order.getItems();
-    if (items != null) {
-      for (OrderItem item : items) {
-        var productId = item.getProduct().getId();
+    if (dto.getItems() != null) {
+      for (OrderItemDTO itemDto : dto.getItems()) {
+        Long productId = itemDto.getProductId();
         // Fetch the real product to get the official price
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new ResourceNotFoundException("Product not found: " + productId));
 
+        OrderItem item = new OrderItem();
         item.setProduct(product);
+        item.setQuantity(itemDto.getQuantity());
         item.setUnitPrice(product.getPrice());
-        item.setOrder(order);
+        item.setOrder(entity);
+        entity.getItems().add(item);
       }
     }
 
     // Total calculation is handled by @PrePersist in the Entity
-    return orderRepository.save(order);
+    entity = orderRepository.save(entity);
+    return new OrderDTO(entity);
   }
 
   @Transactional
-  public Order update(Long id, Order updatedData) {
-    Order existingOrder = findById(id);
+  public OrderDTO update(Long id, OrderDTO dto) {
+    Order entity = orderRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + id));
 
-    if (updatedData.getStatus() != null) {
-      existingOrder.setStatus(updatedData.getStatus());
+    if (dto.getStatus() != null) {
+      entity.setStatus(dto.getStatus());
     }
 
-    return orderRepository.save(existingOrder);
+    entity = orderRepository.save(entity);
+    return new OrderDTO(entity);
   }
 
   @Transactional
-  public Order cancel(Long id) {
-    Order order = findById(id);
+  public OrderDTO cancel(Long id) {
+    Order entity = orderRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + id));
 
     // Business Rule: Cannot cancel if already shipped or delivered
-    if (order.getStatus() == OrderStatus.SHIPPED || order.getStatus() == OrderStatus.DELIVERED) {
+    if (entity.getStatus() == OrderStatus.SHIPPED || entity.getStatus() == OrderStatus.DELIVERED) {
       throw new IllegalStateException(
           "Order cannot be canceled because it has already been shipped or delivered.");
     }
 
     // Business Rule: Cannot cancel if already canceled
-    if (order.getStatus() == OrderStatus.CANCELED) {
+    if (entity.getStatus() == OrderStatus.CANCELED) {
       throw new IllegalStateException("Order is already canceled.");
     }
 
-    order.setStatus(OrderStatus.CANCELED);
-    return orderRepository.save(order);
+    entity.setStatus(OrderStatus.CANCELED);
+    entity = orderRepository.save(entity);
+    return new OrderDTO(entity);
   }
 }

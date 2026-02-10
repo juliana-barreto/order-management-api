@@ -28,30 +28,30 @@ public class UserController {
 
   @GetMapping
   @Operation(summary = "List all", description = "Returns the list of all registered users")
-  public ResponseEntity<List<User>> list() {
+  public ResponseEntity<List<UserDTO>> list() {
     return ResponseEntity.ok(userService.findAll());
   }
 
   @GetMapping("/{id}")
   @Operation(summary = "Find by ID", description = "Returns a specific user by their ID")
-  public ResponseEntity<User> findById(@PathVariable Long id) {
+  public ResponseEntity<UserDTO> findById(@PathVariable Long id) {
     return ResponseEntity.ok(userService.findById(id));
   }
 
   @PostMapping
   @Operation(summary = "Create user", description = "Creates a new user")
-  public ResponseEntity<User> create(@RequestBody User user) {
-    User newUser = userService.create(user);
+  public ResponseEntity<UserDTO> create(@RequestBody UserDTO dto) {
+    UserDTO newDto = userService.create(dto);
     URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-        .path("/{id}").buildAndExpand(newUser.getId()).toUri();
-    return ResponseEntity.created(uri).body(newUser);
+        .path("/{id}").buildAndExpand(newDto.getId()).toUri();
+    return ResponseEntity.created(uri).body(newDto);
   }
 
   @PutMapping("/{id}")
   @Operation(summary = "Update user",
       description = "Updates only the provided data, keeping the rest")
-  public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User user) {
-    return ResponseEntity.ok(userService.update(id, user));
+  public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserDTO dto) {
+    return ResponseEntity.ok(userService.update(id, dto));
   }
 
   @DeleteMapping("/{id}")

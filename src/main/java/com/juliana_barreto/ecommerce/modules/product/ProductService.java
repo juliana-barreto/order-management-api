@@ -1,12 +1,12 @@
 package com.juliana_barreto.ecommerce.modules.product;
 
 import com.juliana_barreto.ecommerce.modules.category.Category;
+import com.juliana_barreto.ecommerce.modules.category.CategoryDTO;
 import com.juliana_barreto.ecommerce.modules.category.CategoryRepository;
 import com.juliana_barreto.ecommerce.shared.exceptions.DatabaseException;
 import com.juliana_barreto.ecommerce.shared.exceptions.ResourceNotFoundException;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,61 +23,70 @@ public class ProductService {
   }
 
   @Transactional(readOnly = true)
-  public List<Product> findAll() {
-    return productRepository.findAll();
+  public List<ProductDTO> findAll() {
+    List<Product> entities = productRepository.findAll();
+    List<ProductDTO> dtos = new ArrayList<>();
+    for (Product entity : entities) {
+      dtos.add(new ProductDTO(entity));
+    }
+    return dtos;
   }
 
   @Transactional(readOnly = true)
-  public Product findById(Long id) {
-    return productRepository.findById(id)
+  public ProductDTO findById(Long id) {
+    Product entity = productRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + id));
+    return new ProductDTO(entity);
   }
 
   @Transactional
-  public Product create(Product product) {
-
+  public ProductDTO create(ProductDTO dto) {
     // Basic validation
-    if (product.getName() == null || product.getName().isBlank()) {
+    if (dto.getName() == null || dto.getName().isBlank()) {
       throw new IllegalArgumentException("Product name is mandatory.");
     }
-    if (product.getPrice() == null) {
+    if (dto.getPrice() == null) {
       throw new IllegalArgumentException("Product price is mandatory.");
     }
 
-    // Handle Category Association
-    if (product.getCategories() != null && !product.getCategories().isEmpty()) {
-      Set<Category> categoriesRequest = new HashSet<>(product.getCategories());
-      product.getCategories().clear(); // Prevent saving transient/detached objects
-      assignCategoriesToProduct(product, categoriesRequest);
-    }
-    return productRepository.save(product);
+    Product entity = new Product();
+    copyDtoToEntity(dto, entity);
+    entity = productRepository.save(entity);
+    return new ProductDTO(entity);
   }
 
   @Transactional
-  public Product update(Long id, Product updatedProduct) {
-    Product existingProduct = findById(id);
+  public ProductDTO update(Long id, ProductDTO dto) {
+    Product entity = productRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + id));
 
     // Update simple fields
-    if (updatedProduct.getName() != null && !updatedProduct.getName().isBlank()) {
-      existingProduct.setName(updatedProduct.getName());
+    if (dto.getName() != null && !dto.getName().isBlank()) {
+      entity.setName(dto.getName());
     }
-    if (updatedProduct.getDescription() != null && !updatedProduct.getDescription().isBlank()) {
-      existingProduct.setDescription(updatedProduct.getDescription());
+    if (dto.getDescription() != null && !dto.getDescription().isBlank()) {
+      entity.setDescription(dto.getDescription());
     }
-    if (updatedProduct.getPrice() != null) {
-      existingProduct.setPrice(updatedProduct.getPrice());
+    if (dto.getPrice() != null) {
+      entity.setPrice(dto.getPrice());
     }
-    if (updatedProduct.getImgUrl() != null && !updatedProduct.getImgUrl().isBlank()) {
-      existingProduct.setImgUrl(updatedProduct.getImgUrl());
+    if (dto.getImgUrl() != null && !dto.getImgUrl().isBlank()) {
+      entity.setImgUrl(dto.getImgUrl());
     }
 
     // Update Category Association
-    if (updatedProduct.getCategories() != null) {
-      existingProduct.getCategories().clear(); // Clear existing relationships
-      assignCategoriesToProduct(existingProduct, updatedProduct.getCategories());
+    if (dto.getCategories() != null) {
+      entity.getCategories().clear();
+      for (CategoryDTO catDto : dto.getCategories()) {
+        Category category = categoryRepository.findById(catDto.getId())
+            .orElseThrow(() -> new ResourceNotFoundException(
+                "Category not found with ID: " + catDto.getId()));
+        entity.getCategories().add(category);
+      }
     }
 
-    return productRepository.save(existingProduct);
+    entity = productRepository.save(entity);
+    return new ProductDTO(entity);
   }
 
   @Transactional
@@ -93,13 +102,22 @@ public class ProductService {
     }
   }
 
-  // Helper method to fetch Category entities from the DB and associate them with the Product
-  private void assignCategoriesToProduct(Product product, Set<Category> categories) {
-    for (Category catStub : categories) {
-      Category category = categoryRepository.findById(catStub.getId())
-          .orElseThrow(() -> new ResourceNotFoundException(
-              "Category not found with ID: " + catStub.getId()));
-      product.getCategories().add(category);
+  // Helper method to copy DTO fields to entity
+  private void copyDtoToEntity(ProductDTO dto, Product entity) {
+    entity.setName(dto.getName());
+    entity.setDescription(dto.getDescription());
+    entity.setPrice(dto.getPrice());
+    entity.setImgUrl(dto.getImgUrl());
+
+    // Handle Category Association
+    if (dto.getCategories() != null && !dto.getCategories().isEmpty()) {
+      entity.getCategories().clear();
+      for (CategoryDTO catDto : dto.getCategories()) {
+        Category category = categoryRepository.findById(catDto.getId())
+            .orElseThrow(() -> new ResourceNotFoundException(
+                "Category not found with ID: " + catDto.getId()));
+        entity.getCategories().add(category);
+      }
     }
   }
 }

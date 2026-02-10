@@ -28,30 +28,30 @@ public class ProductController {
 
   @GetMapping
   @Operation(summary = "List all", description = "Returns the list of all registered products")
-  public ResponseEntity<List<Product>> list() {
+  public ResponseEntity<List<ProductDTO>> list() {
     return ResponseEntity.ok(productService.findAll());
   }
 
   @GetMapping("/{id}")
   @Operation(summary = "Find by ID", description = "Returns a specific product by its ID")
-  public ResponseEntity<Product> findById(@PathVariable Long id) {
+  public ResponseEntity<ProductDTO> findById(@PathVariable Long id) {
     return ResponseEntity.ok(productService.findById(id));
   }
 
   @PostMapping
   @Operation(summary = "Create product", description = "Creates a new product with categories")
-  public ResponseEntity<Product> create(@RequestBody Product product) {
-    Product newProduct = productService.create(product);
+  public ResponseEntity<ProductDTO> create(@RequestBody ProductDTO dto) {
+    ProductDTO newDto = productService.create(dto);
     URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-        .path("/{id}").buildAndExpand(newProduct.getId()).toUri();
-    return ResponseEntity.created(uri).body(newProduct);
+        .path("/{id}").buildAndExpand(newDto.getId()).toUri();
+    return ResponseEntity.created(uri).body(newDto);
   }
 
   @PutMapping("/{id}")
   @Operation(summary = "Update product",
       description = "Updates product details and category associations")
-  public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product product) {
-    return ResponseEntity.ok(productService.update(id, product));
+  public ResponseEntity<ProductDTO> update(@PathVariable Long id, @RequestBody ProductDTO dto) {
+    return ResponseEntity.ok(productService.update(id, dto));
   }
 
   @DeleteMapping("/{id}")
