@@ -119,7 +119,8 @@ Product "*" -- "*" Category : categories
 Order ..> OrderStatus : uses
 ```
 
-## Estrutura do ProjetoA organização de pacotes é modular, facilitando a escalabilidade do sistema:
+## Estrutura do Projeto
+A organização de pacotes é modular, facilitando a escalabilidade do sistema:
 
 ```Plaintext
 📦 com.juliana_barreto.ecommerce
