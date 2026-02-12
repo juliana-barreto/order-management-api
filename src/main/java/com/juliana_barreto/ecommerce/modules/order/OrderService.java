@@ -28,7 +28,7 @@ public class OrderService {
 
   @Transactional(readOnly = true)
   public List<OrderDTO> findAll() {
-    List<Order> entities = orderRepository.findAll();
+    List<Order> entities = orderRepository.findAllWithRelations();
     List<OrderDTO> dtos = new ArrayList<>();
     for (Order entity : entities) {
       dtos.add(new OrderDTO(entity));

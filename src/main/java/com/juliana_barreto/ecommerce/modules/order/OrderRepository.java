@@ -9,7 +9,21 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-  @Query("SELECT DISTINCT o FROM Order o JOIN o.items i WHERE i.id.product.id = :productId")
+  @Query("""
+        SELECT DISTINCT o
+        FROM Order o
+        JOIN o.items i
+        WHERE i.id.product.id = :productId
+      """)
   List<Order> findOrdersByProductId(@Param("productId") Long productId);
+
+  @Query("""
+        SELECT DISTINCT o
+        FROM Order o
+        JOIN FETCH o.client
+        JOIN FETCH o.items item
+        JOIN FETCH item.id.product
+      """)
+  List<Order> findAllWithRelations();
 }
 
