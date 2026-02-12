@@ -63,6 +63,14 @@
       <groupId>org.springdoc</groupId>
       <version>3.0.1</version>
     </dependency>
+    <dependency>
+      <artifactId>spring-boot-starter-validation</artifactId>
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>spring-boot-starter-security</artifactId>
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
   </dependencies>
   <description>E-commerce project developed with Spring Boot</description>
   <developers>

@@ -5,6 +5,7 @@ import com.juliana_barreto.ecommerce.shared.exceptions.ResourceNotFoundException
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,9 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
   private final UserRepository userRepository;
+  private final PasswordEncoder passwordEncoder;
 
-  public UserService(UserRepository userRepository) {
+  public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
     this.userRepository = userRepository;
+    this.passwordEncoder = passwordEncoder;
   }
 
   @Transactional(readOnly = true)
@@ -36,11 +39,13 @@ public class UserService {
 
   @Transactional
   public UserDTO create(UserDTO dto) {
-    if (dto.getName() == null || dto.getName().isBlank()) {
-      throw new IllegalArgumentException("User name is mandatory.");
+    if (dto.getPassword() == null || dto.getPassword().isBlank()) {
+      throw new IllegalArgumentException("Password is mandatory.");
     }
     User entity = new User();
     copyDtoToEntity(dto, entity);
+    // Encode password before saving
+    entity.setPassword(passwordEncoder.encode(dto.getPassword()));
     entity = userRepository.save(entity);
     return new UserDTO(entity);
   }
@@ -49,21 +54,10 @@ public class UserService {
   public UserDTO update(Long id, UserDTO dto) {
     User entity = userRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
-
-    if (dto.getName() != null && !dto.getName().isBlank()) {
-      entity.setName(dto.getName());
-    }
-    if (dto.getEmail() != null && !dto.getEmail().isBlank()) {
-      entity.setEmail(dto.getEmail());
-    }
-    if (dto.getPhone() != null && !dto.getPhone().isBlank()) {
-      entity.setPhone(dto.getPhone());
-    }
-    if (dto.getCpf() != null && !dto.getCpf().isBlank()) {
-      entity.setCpf(dto.getCpf());
-    }
+    copyDtoToEntity(dto, entity);
+    // If password is provided, update it
     if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
-      entity.setPassword(dto.getPassword());
+      entity.setPassword(passwordEncoder.encode(dto.getPassword()));
     }
     entity = userRepository.save(entity);
     return new UserDTO(entity);
@@ -87,6 +81,5 @@ public class UserService {
     entity.setEmail(dto.getEmail());
     entity.setPhone(dto.getPhone());
     entity.setCpf(dto.getCpf());
-    entity.setPassword(dto.getPassword());
   }
 }
