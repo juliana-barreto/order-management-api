@@ -29,7 +29,6 @@ public class OrderItem implements Serializable {
 
   @EqualsAndHashCode.Include
   @EmbeddedId
-  @Getter(AccessLevel.NONE)
   @Setter(AccessLevel.NONE)
   private OrderItemPK id = new OrderItemPK();
 

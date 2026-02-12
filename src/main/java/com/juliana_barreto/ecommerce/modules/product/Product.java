@@ -1,7 +1,6 @@
 package com.juliana_barreto.ecommerce.modules.product;
 
 import com.juliana_barreto.ecommerce.modules.category.Category;
-import com.juliana_barreto.ecommerce.modules.order.Order;
 import com.juliana_barreto.ecommerce.modules.order_item.OrderItem;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -71,11 +70,4 @@ public class Product implements Serializable {
   @OneToMany(mappedBy = "id.product", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<OrderItem> items = new HashSet<>();
 
-  public Set<Order> getOrders() {
-    Set<Order> orders = new HashSet<>();
-    for (OrderItem item : items) {
-      orders.add(item.getOrder());
-    }
-    return orders;
-  }
 }
