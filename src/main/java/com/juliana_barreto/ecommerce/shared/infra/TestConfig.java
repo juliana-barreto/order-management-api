@@ -97,30 +97,35 @@ public class TestConfig implements CommandLineRunner {
         .name("The Lord of the Rings")
         .description("Lorem ipsum dolor sit amet, consectetur.")
         .price(new BigDecimal("90.5"))
+        .imgUrl("")
         .build();
 
     Product p2 = Product.builder()
         .name("Smart TV")
         .description("Nulla eu imperdiet purus. Maecenas ante.")
         .price(new BigDecimal("2190.0"))
+        .imgUrl("")
         .build();
 
     Product p3 = Product.builder()
         .name("Macbook Pro")
         .description("Nam eleifend maximus tortor, at mollis.")
         .price(new BigDecimal("1250.0"))
+        .imgUrl("")
         .build();
 
     Product p4 = Product.builder()
         .name("PC Gamer")
         .description("Donec aliquet odio ac rhoncus cursus.")
         .price(new BigDecimal("1200.0"))
+        .imgUrl("")
         .build();
 
     Product p5 = Product.builder()
         .name("Rails for Dummies")
         .description("Cras fringilla convallis sem vel faucibus.")
         .price(new BigDecimal("100.99"))
+        .imgUrl("")
         .build();
 
     productRepository.saveAll(List.of(p1, p2, p3, p4, p5));
