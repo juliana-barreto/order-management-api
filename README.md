@@ -58,17 +58,21 @@ class User {
   +Long id
   +String name
   +String email
+  +String phone
+  +String cpf
   +String password
-  +List~Order~ orders
+  +Set~Order~ orders
 }
 class Order {
   +Long id
+  +BigDecimal orderTotal
   +Instant moment
   +OrderStatus status
   +User client
+  +Set~OrderItem~ items
   +Payment payment
-  +List~OrderItem~ items
-  +BigDecimal total()
+  +BigDecimal getTotal()
+  +void calculateOrderTotal()
 }
 class Product {
   +Long id
@@ -76,20 +80,20 @@ class Product {
   +String description
   +BigDecimal price
   +String imgUrl
-  +List~Category~ categories
-  +List~OrderItem~ items
+  +Set~Category~ categories
+  +Set~OrderItem~ items
 }
 class Category {
   +Long id
   +String name
-  +List~Product~ products
+  +Set~Product~ products
 }
 class OrderItem {
   +Integer quantity
-  +BigDecimal price
+  +BigDecimal unitPrice
   +Product product
   +Order order
-  +BigDecimal subTotal()
+  +BigDecimal getSubTotal()
 }
 class Payment {
   +Long id
