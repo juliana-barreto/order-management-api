@@ -61,7 +61,7 @@
     <dependency>
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
       <groupId>org.springdoc</groupId>
-      <version>3.0.1</version>
+      <version>2.3.0</version>
     </dependency>
     <dependency>
       <artifactId>spring-boot-starter-validation</artifactId>
@@ -86,7 +86,7 @@
     <artifactId>spring-boot-starter-parent</artifactId>
     <groupId>org.springframework.boot</groupId>
     <relativePath/>
-    <version>4.0.2</version>
+    <version>3.2.5</version>
     <!--  lookup parent from repository  -->
   </parent>
   <properties>
