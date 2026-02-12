@@ -1,4 +1,4 @@
-package com.juliana_barreto.ecommerce;
+package com.juliana_barreto.ecommerce.shared.infra;
 
 import com.juliana_barreto.ecommerce.modules.category.Category;
 import com.juliana_barreto.ecommerce.modules.category.CategoryRepository;

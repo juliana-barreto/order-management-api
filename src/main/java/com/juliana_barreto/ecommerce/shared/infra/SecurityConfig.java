@@ -1,4 +1,4 @@
-package com.juliana_barreto.ecommerce;
+package com.juliana_barreto.ecommerce.shared.infra;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
