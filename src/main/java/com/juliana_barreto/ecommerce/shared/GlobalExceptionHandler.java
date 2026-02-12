@@ -1,5 +1,6 @@
 package com.juliana_barreto.ecommerce.shared;
 
+import com.juliana_barreto.ecommerce.shared.exceptions.BusinessException;
 import com.juliana_barreto.ecommerce.shared.exceptions.DatabaseException;
 import com.juliana_barreto.ecommerce.shared.exceptions.InvalidDataException;
 import com.juliana_barreto.ecommerce.shared.exceptions.ResourceNotFoundException;
@@ -80,6 +81,21 @@ public class GlobalExceptionHandler {
         HttpStatus.UNPROCESSABLE_ENTITY.value(),
         "Validation Error",
         errorMessage,
+        request.getRequestURI()
+    );
+
+    return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(error);
+  }
+
+  // Handling for Business Rules (HTTP 422)
+  @ExceptionHandler(BusinessException.class)
+  public ResponseEntity<ErrorResponse> businessRule(BusinessException ex, HttpServletRequest request) {
+
+    ErrorResponse error = new ErrorResponse(
+        LocalDateTime.now(),
+        HttpStatus.UNPROCESSABLE_ENTITY.value(), // 422
+        "Business rule violation",
+        ex.getMessage(),
         request.getRequestURI()
     );
 

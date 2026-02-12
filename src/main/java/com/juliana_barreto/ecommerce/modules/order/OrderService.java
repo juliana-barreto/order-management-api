@@ -6,6 +6,7 @@ import com.juliana_barreto.ecommerce.modules.product.Product;
 import com.juliana_barreto.ecommerce.modules.product.ProductRepository;
 import com.juliana_barreto.ecommerce.modules.user.User;
 import com.juliana_barreto.ecommerce.modules.user.UserRepository;
+import com.juliana_barreto.ecommerce.shared.exceptions.BusinessException;
 import com.juliana_barreto.ecommerce.shared.exceptions.ResourceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -94,13 +95,13 @@ public class OrderService {
 
     // Business Rule: Cannot cancel if already shipped or delivered
     if (entity.getStatus() == OrderStatus.SHIPPED || entity.getStatus() == OrderStatus.DELIVERED) {
-      throw new IllegalStateException(
+      throw new BusinessException(
           "Order cannot be canceled because it has already been shipped or delivered.");
     }
 
     // Business Rule: Cannot cancel if already canceled
     if (entity.getStatus() == OrderStatus.CANCELED) {
-      throw new IllegalStateException("Order is already canceled.");
+      throw new BusinessException("Order is already canceled.");
     }
 
     entity.setStatus(OrderStatus.CANCELED);
