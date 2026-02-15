@@ -5,9 +5,9 @@ import com.juliana_barreto.ecommerce.modules.category.CategoryRepository;
 import com.juliana_barreto.ecommerce.modules.order.Order;
 import com.juliana_barreto.ecommerce.modules.order.OrderRepository;
 import com.juliana_barreto.ecommerce.modules.order.OrderStatus;
+import com.juliana_barreto.ecommerce.modules.order.Payment;
 import com.juliana_barreto.ecommerce.modules.order_item.OrderItem;
 import com.juliana_barreto.ecommerce.modules.order_item.OrderItemRepository;
-import com.juliana_barreto.ecommerce.modules.order.Payment;
 import com.juliana_barreto.ecommerce.modules.product.Product;
 import com.juliana_barreto.ecommerce.modules.product.ProductRepository;
 import com.juliana_barreto.ecommerce.modules.user.User;
@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @Profile("test")
@@ -26,6 +27,9 @@ public class TestConfig implements CommandLineRunner {
 
   @Autowired
   private UserRepository userRepository;
+
+  @Autowired
+  private PasswordEncoder passwordEncoder;
 
   @Autowired
   private OrderRepository orderRepository;
@@ -46,7 +50,7 @@ public class TestConfig implements CommandLineRunner {
         .email("maria@gmail.com")
         .phone("988888888")
         .cpf("19999999991")
-        .password("123456")
+        .password(passwordEncoder.encode("123456"))
         .build();
 
     User u2 = User.builder()
@@ -54,7 +58,7 @@ public class TestConfig implements CommandLineRunner {
         .email("alex@gmail.com")
         .phone("977777777")
         .cpf("12345678902")
-        .password("123456")
+        .password(passwordEncoder.encode("123456"))
         .build();
 
     userRepository.saveAll(List.of(u1, u2));
