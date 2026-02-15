@@ -2,6 +2,7 @@ package com.juliana_barreto.ecommerce.modules.order;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
@@ -38,7 +39,7 @@ public class Payment implements Serializable {
   @Column(nullable = false)
   private Instant moment = Instant.now();
 
-  @OneToOne
+  @OneToOne(fetch = FetchType.LAZY)
   @MapsId
   private Order order;
 }
