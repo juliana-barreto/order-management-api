@@ -1,4 +1,4 @@
-package com.juliana_barreto.ecommerce.modules.order;
+package com.juliana_barreto.order_management_api.modules.order;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
