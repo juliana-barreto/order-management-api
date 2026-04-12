@@ -1,7 +1,8 @@
-package com.juliana_barreto.order_management_api.modules.order.entities;
+package com.juliana_barreto.order_management_api.modules.order;
 
-import com.juliana_barreto.order_management_api.modules.order.OrderStatus;
-import com.juliana_barreto.order_management_api.modules.user.entities.User;
+import com.juliana_barreto.order_management_api.modules.order_item.OrderItem;
+import com.juliana_barreto.order_management_api.modules.user.User;
+import com.juliana_barreto.order_management_api.shared.exceptions.BusinessException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -87,5 +88,36 @@ public class Order implements Serializable {
   @PreUpdate
   public void calculateOrderTotal() {
     this.orderTotal = getTotal();
+  }
+
+  public void pay() {
+    if (this.status != OrderStatus.AWAITING_PAYMENT) {
+      throw new BusinessException("Order can only be paid if it is awaiting payment.");
+    }
+    this.status = OrderStatus.PAID;
+  }
+
+  public void ship() {
+    if (this.status != OrderStatus.PAID) {
+      throw new BusinessException("Order can only be shipped if it is paid.");
+    }
+    this.status = OrderStatus.SHIPPED;
+  }
+
+  public void deliver() {
+    if (this.status != OrderStatus.SHIPPED) {
+      throw new BusinessException("Order can only be delivered if it is shipped.");
+    }
+    this.status = OrderStatus.DELIVERED;
+  }
+
+  public void cancel() {
+    if (this.status == OrderStatus.SHIPPED || this.status == OrderStatus.DELIVERED) {
+      throw new BusinessException("Order cannot be canceled because it has already been shipped or delivered.");
+    }
+    if (this.status == OrderStatus.CANCELED) {
+      throw new BusinessException("Order is already canceled.");
+    }
+    this.status = OrderStatus.CANCELED;
   }
 }
