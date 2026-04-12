@@ -25,4 +25,15 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
       JOIN FETCH p.categories
       """)
   List<Product> findAllWithCategories();
+
+  @Query("SELECT p FROM Product p WHERE p.active = true")
+  List<Product> findAllActive();
+
+  @Query("""
+      SELECT DISTINCT p 
+      FROM Product p 
+      JOIN FETCH p.categories c 
+      WHERE c.id = :categoryId AND p.active = true
+      """)
+  List<Product> findActiveProductsByCategory(@Param("categoryId") Long categoryId);
 }

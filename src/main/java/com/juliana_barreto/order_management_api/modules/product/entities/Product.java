@@ -50,6 +50,9 @@ public class Product implements Serializable {
   private String name;
 
   @Column(nullable = false)
+  private boolean active = true;
+
+  @Column(nullable = false)
   private String description;
 
   @Column(nullable = false, precision = 10, scale = 2)
@@ -77,5 +80,14 @@ public class Product implements Serializable {
       throw new BusinessException("Product price must be greater than zero.");
     }
     this.price = newPrice;
+  }
+
+  // Business rule: Soft delete
+  public void deactivate() {
+    this.active = false;
+  }
+
+  public void activate() {
+    this.active = true;
   }
 }
