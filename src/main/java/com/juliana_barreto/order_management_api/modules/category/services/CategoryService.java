@@ -21,37 +21,37 @@ public class CategoryService {
   }
 
   @Transactional(readOnly = true)
-  public List<CategoryDTO> findAll() {
+  public List<CategoryResponse> findAll() {
     List<Category> entities = categoryRepository.findAll();
-    List<CategoryDTO> dtos = new ArrayList<>();
+    List<CategoryResponse> responses = new ArrayList<>();
     for (Category entity : entities) {
-      dtos.add(new CategoryDTO(entity));
+      responses.add(new CategoryResponse(entity));
     }
-    return dtos;
+    return responses;
   }
 
   @Transactional(readOnly = true)
-  public CategoryDTO findById(Long id) {
+  public CategoryResponse findById(Long id) {
     Category entity = categoryRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + id));
-    return new CategoryDTO(entity);
+    return new CategoryResponse(entity);
   }
 
   @Transactional
-  public CategoryDTO create(CategoryDTO dto) {
+  public CategoryResponse create(CategoryRequest request) {
     Category entity = new Category();
-    entity.setName(dto.getName());
+    entity.setName(request.name());
     entity = categoryRepository.save(entity);
-    return new CategoryDTO(entity);
+    return new CategoryResponse(entity);
   }
 
   @Transactional
-  public CategoryDTO update(Long id, CategoryDTO dto) {
+  public CategoryResponse update(Long id, CategoryRequest request) {
     Category entity = categoryRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + id));
-    entity.setName(dto.getName());
+    entity.setName(request.name());
     entity = categoryRepository.save(entity);
-    return new CategoryDTO(entity);
+    return new CategoryResponse(entity);
   }
 
   @Transactional
