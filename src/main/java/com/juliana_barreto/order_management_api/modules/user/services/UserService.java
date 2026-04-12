@@ -1,8 +1,7 @@
-package com.juliana_barreto.order_management_api.modules.user.services;
+package com.juliana_barreto.order_management_api.modules.user;
 
-import com.juliana_barreto.order_management_api.modules.user.dto.UserDTO;
-import com.juliana_barreto.order_management_api.modules.user.entities.User;
-import com.juliana_barreto.order_management_api.modules.user.repositories.UserRepository;
+import com.juliana_barreto.order_management_api.modules.order.OrderRepository;
+import com.juliana_barreto.order_management_api.shared.exceptions.BusinessException;
 import com.juliana_barreto.order_management_api.shared.exceptions.DatabaseException;
 import com.juliana_barreto.order_management_api.shared.exceptions.ResourceNotFoundException;
 import java.util.ArrayList;
@@ -18,52 +17,68 @@ public class UserService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
-  public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+  private final OrderRepository orderRepository;
+
+  public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, OrderRepository orderRepository) {
     this.userRepository = userRepository;
     this.passwordEncoder = passwordEncoder;
+    this.orderRepository = orderRepository;
+
   }
 
   @Transactional(readOnly = true)
-  public List<UserDTO> findAll() {
+  public List<UserResponse> findAll() {
     List<User> entities = userRepository.findAll();
-    List<UserDTO> dtos = new ArrayList<>();
+    List<UserResponse> responses = new ArrayList<>();
     for (User entity : entities) {
-      dtos.add(new UserDTO(entity));
+      responses.add(new UserResponse(entity));
     }
-    return dtos;
+    return responses;
   }
 
   @Transactional(readOnly = true)
-  public UserDTO findById(Long id) {
+  public UserResponse findById(Long id) {
     User entity = userRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
-    return new UserDTO(entity);
+    return new UserResponse(entity);
   }
 
   @Transactional
-  public UserDTO create(UserDTO dto) {
-    if (dto.getPassword() == null || dto.getPassword().isBlank()) {
-      throw new IllegalArgumentException("Password is mandatory.");
-    }
+  public UserResponse create(UserRequest request) {
+    validateUniqueFields(request.email(), request.cpf(), request.phone(), null);
+
     User entity = new User();
-    copyDtoToEntity(dto, entity);
-    // Encode password before saving
-    entity.setPassword(passwordEncoder.encode(dto.getPassword()));
-    entity = userRepository.save(entity);
-    return new UserDTO(entity);
+    entity.setName(request.name());
+    entity.setCpf(request.cpf());
+    entity.updateContactInfo(request.email(), request.phone());
+    entity.changePassword(passwordEncoder.encode(request.password()));
+
+    return new UserResponse(entity);
   }
 
+  // Specific Use Case: Update only contact and basic info
   @Transactional
-  public UserDTO update(Long id, UserDTO dto) {
+  public UserResponse updateBasicInfo(Long id, UserUpdateRequest request) {
     User entity = userRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
-    copyDtoToEntity(dto, entity);
-    // If password is provided, update it
-    if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
-      entity.setPassword(passwordEncoder.encode(dto.getPassword()));
-    }
+
+    validateUniqueFields(request.email(), request.cpf(), request.phone(), id);
+
+    entity.setName(request.name());
+    entity.updateContactInfo(request.email(), request.phone());
     entity = userRepository.save(entity);
-    return new UserDTO(entity);
+
+    return new UserResponse(entity);
+  }
+
+  // Specific Use Case: Change password securely
+  @Transactional
+  public void updatePassword(Long id, UserPasswordRequest request) {
+    User entity = userRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
+
+    entity.changePassword(passwordEncoder.encode(request.password()));
+    userRepository.save(entity);
   }
 
   @Transactional
@@ -78,11 +93,24 @@ public class UserService {
     }
   }
 
-  // Helper method to copy DTO fields to entity
-  private void copyDtoToEntity(UserDTO dto, User entity) {
-    entity.setName(dto.getName());
-    entity.setEmail(dto.getEmail());
-    entity.setPhone(dto.getPhone());
-    entity.setCpf(dto.getCpf());
+  // Helper method to validate unique fields
+  private void validateUniqueFields(String email, String cpf, String phone, Long currentId) {
+    userRepository.findByEmail(email).ifPresent(user -> {
+      if (!user.getId().equals(currentId)) {
+        throw new BusinessException("Email already registered.");
+      }
+    });
+
+    userRepository.findByCpf(cpf).ifPresent(user -> {
+      if (!user.getId().equals(currentId)) {
+        throw new BusinessException("CPF already registered.");
+      }
+    });
+
+    userRepository.findByPhone(phone).ifPresent(user -> {
+      if (!user.getId().equals(currentId)) {
+        throw new BusinessException("Phone already registered.");
+      }
+    });
   }
 }
