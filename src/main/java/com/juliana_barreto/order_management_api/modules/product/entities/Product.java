@@ -1,7 +1,8 @@
-package com.juliana_barreto.order_management_api.modules.product.entities;
+package com.juliana_barreto.order_management_api.modules.product;
 
-import com.juliana_barreto.order_management_api.modules.category.entities.Category;
-import com.juliana_barreto.order_management_api.modules.order.entities.OrderItem;
+import com.juliana_barreto.order_management_api.modules.category.Category;
+import com.juliana_barreto.order_management_api.modules.order_item.OrderItem;
+import com.juliana_barreto.order_management_api.shared.exceptions.BusinessException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -70,4 +71,11 @@ public class Product implements Serializable {
   @OneToMany(mappedBy = "id.product", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<OrderItem> items = new HashSet<>();
 
+  // Business rule: A product cannot have a negative or zero price
+  public void updatePrice(BigDecimal newPrice) {
+    if (newPrice == null || newPrice.compareTo(BigDecimal.ZERO) <= 0) {
+      throw new BusinessException("Product price must be greater than zero.");
+    }
+    this.price = newPrice;
+  }
 }
