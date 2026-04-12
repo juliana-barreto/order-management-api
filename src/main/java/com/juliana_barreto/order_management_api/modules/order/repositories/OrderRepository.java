@@ -37,5 +37,16 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
           WHERE o.id = :id
       """)
   Optional<Order> findByIdWithRelations(@Param("id") Long id);
+
+  // Custom method to fetch the order history of a specific user
+  @Query("""
+      SELECT o
+      FROM Order o
+      JOIN FETCH o.items item
+      JOIN FETCH item.id.product
+      WHERE o.client.id = :clientId
+      ORDER BY o.moment DESC
+      """)
+  List<Order> findOrderHistoryByClientId(@Param("clientId") Long clientId);
 }
 

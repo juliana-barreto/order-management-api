@@ -1,16 +1,13 @@
-package com.juliana_barreto.order_management_api.modules.order.services;
+package com.juliana_barreto.order_management_api.modules.order;
 
-import com.juliana_barreto.order_management_api.modules.order.entities.OrderItem;
-import com.juliana_barreto.order_management_api.modules.order.OrderStatus;
-import com.juliana_barreto.order_management_api.modules.order.dto.OrderDTO;
-import com.juliana_barreto.order_management_api.modules.order.dto.OrderItemDTO;
-import com.juliana_barreto.order_management_api.modules.order.entities.Order;
-import com.juliana_barreto.order_management_api.modules.order.repositories.OrderRepository;
-import com.juliana_barreto.order_management_api.modules.product.entities.Product;
-import com.juliana_barreto.order_management_api.modules.product.repositories.ProductRepository;
-import com.juliana_barreto.order_management_api.modules.user.entities.User;
-import com.juliana_barreto.order_management_api.modules.user.repositories.UserRepository;
-import com.juliana_barreto.order_management_api.shared.exceptions.BusinessException;
+import com.juliana_barreto.order_management_api.modules.order_item.OrderItem;
+import com.juliana_barreto.order_management_api.modules.order_item.OrderItemRequest;
+import com.juliana_barreto.order_management_api.modules.order_item.OrderItemResponse;
+import com.juliana_barreto.order_management_api.modules.product.Product;
+import com.juliana_barreto.order_management_api.modules.product.ProductRepository;
+import com.juliana_barreto.order_management_api.modules.user.User;
+import com.juliana_barreto.order_management_api.modules.user.UserRepository;
+import com.juliana_barreto.order_management_api.modules.user.UserResponse;
 import com.juliana_barreto.order_management_api.shared.exceptions.ResourceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,43 +29,55 @@ public class OrderService {
   }
 
   @Transactional(readOnly = true)
-  public List<OrderDTO> findAll() {
+  public List<OrderResponse> findAll() {
     List<Order> entities = orderRepository.findAllWithRelations();
-    List<OrderDTO> dtos = new ArrayList<>();
+    List<OrderResponse> responses = new ArrayList<>();
     for (Order entity : entities) {
-      dtos.add(new OrderDTO(entity));
+      responses.add(mapToResponse(entity));
     }
-    return dtos;
+    return responses;
   }
 
   @Transactional(readOnly = true)
-  public OrderDTO findById(Long id) {
+  public OrderResponse findById(Long id) {
     Order entity = orderRepository.findByIdWithRelations(id)
         .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + id));
-    return new OrderDTO(entity);
+    return mapToResponse(entity);
+  }
+
+  @Transactional(readOnly = true)
+  public List<OrderResponse> findClientHistory(Long clientId) {
+    // Fetch the specific user's order history
+    List<Order> entities = orderRepository.findOrderHistoryByClientId(clientId);
+    List<OrderResponse> responses = new ArrayList<>();
+
+    for (Order entity : entities) {
+      responses.add(mapToResponse(entity));
+    }
+    return responses;
   }
 
   @Transactional
-  public OrderDTO create(OrderDTO dto) {
+  public OrderResponse create(OrderRequest request) {
     Order entity = new Order();
 
     // Fetch and set client
-    User client = userRepository.findById(dto.getClient().getId())
+    User client = userRepository.findById(request.clientId())
         .orElseThrow(() -> new ResourceNotFoundException("Client not found."));
     entity.setClient(client);
 
     // Process Items, linking and ensuring real price from DB
-    if (dto.getItems() != null && !dto.getItems().isEmpty()) {
-      for (OrderItemDTO itemDto : dto.getItems()) {
-        Long productId = itemDto.getProductId();
+    if (request.items() != null && !request.items().isEmpty()) {
+      for (OrderItemRequest itemReq : request.items()) {
+        Long productId = itemReq.productId();
         // Fetch the real product to get the official price
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new ResourceNotFoundException("Product not found: " + productId));
 
         OrderItem item = new OrderItem();
         item.setProduct(product);
-        item.setQuantity(itemDto.getQuantity());
-        item.setUnitPrice(product.getPrice());
+        item.setQuantity(itemReq.quantity());
+        item.setUnitPrice(product.getPrice()); // Ensure price is taken from the product
         item.setOrder(entity);
         entity.getItems().add(item);
       }
@@ -76,40 +85,62 @@ public class OrderService {
 
     // Total calculation is handled by @PrePersist in the Entity
     entity = orderRepository.save(entity);
-    return new OrderDTO(entity);
+    return mapToResponse(entity);
   }
 
   @Transactional
-  public OrderDTO update(Long id, OrderDTO dto) {
+  public OrderResponse markAsPaid(Long id) {
     Order entity = orderRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + id));
 
-    if (dto.getStatus() != null) {
-      entity.setStatus(dto.getStatus());
-    }
-
+    entity.pay();
     entity = orderRepository.save(entity);
-    return new OrderDTO(entity);
+    return mapToResponse(entity);
   }
 
   @Transactional
-  public OrderDTO cancel(Long id) {
+  public OrderResponse shipOrder(Long id) {
     Order entity = orderRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + id));
 
-    // Business Rule: Cannot cancel if already shipped or delivered
-    if (entity.getStatus() == OrderStatus.SHIPPED || entity.getStatus() == OrderStatus.DELIVERED) {
-      throw new BusinessException(
-          "Order cannot be canceled because it has already been shipped or delivered.");
-    }
-
-    // Business Rule: Cannot cancel if already canceled
-    if (entity.getStatus() == OrderStatus.CANCELED) {
-      throw new BusinessException("Order is already canceled.");
-    }
-
-    entity.setStatus(OrderStatus.CANCELED);
+    entity.ship();
     entity = orderRepository.save(entity);
-    return new OrderDTO(entity);
+    return mapToResponse(entity);
+  }
+
+  @Transactional
+  public OrderResponse deliverOrder(Long id) {
+    Order entity = orderRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + id));
+
+    entity.deliver();
+    entity = orderRepository.save(entity);
+    return mapToResponse(entity);
+  }
+
+  @Transactional
+  public OrderResponse cancel(Long id) {
+    Order entity = orderRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + id));
+
+    entity.cancel();
+    entity = orderRepository.save(entity);
+    return mapToResponse(entity);
+  }
+
+  private OrderResponse mapToResponse(Order entity) {
+    List<OrderItemResponse> itemResponses = new ArrayList<>();
+    for (OrderItem item : entity.getItems()) {
+      itemResponses.add(new OrderItemResponse(item));
+    }
+
+    return new OrderResponse(
+        entity.getId(),
+        entity.getMoment(),
+        entity.getStatus(),
+        new UserResponse(entity.getClient()),
+        itemResponses,
+        entity.getOrderTotal()
+    );
   }
 }

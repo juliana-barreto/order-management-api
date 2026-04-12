@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,35 +30,41 @@ public class OrderController {
 
   @GetMapping
   @Operation(summary = "List all", description = "Returns the list of all registered orders")
-  public ResponseEntity<List<OrderDTO>> list() {
+  public ResponseEntity<List<OrderResponse>> list() {
     return ResponseEntity.ok(orderService.findAll());
   }
 
   @GetMapping("/{id}")
   @Operation(summary = "Find by ID", description = "Returns a specific order by its ID")
-  public ResponseEntity<OrderDTO> findById(@PathVariable Long id) {
+  public ResponseEntity<OrderResponse> findById(@PathVariable Long id) {
     return ResponseEntity.ok(orderService.findById(id));
   }
 
   @PostMapping
   @Operation(summary = "Create order", description = "Creates a new order for an existing user")
-  public ResponseEntity<OrderDTO> create(@Valid @RequestBody OrderDTO dto) {
-    OrderDTO newDto = orderService.create(dto);
+  public ResponseEntity<OrderResponse> create(@Valid @RequestBody OrderRequest request) {
+    OrderResponse response = orderService.create(request);
     URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-        .path("/{id}").buildAndExpand(newDto.getId()).toUri();
-    return ResponseEntity.created(uri).body(newDto);
+        .path("/{id}").buildAndExpand(response.id()).toUri();
+    return ResponseEntity.created(uri).body(response);
   }
 
-  @PutMapping("/{id}")
-  @Operation(summary = "Update order", description = "Updates general order status")
-  public ResponseEntity<OrderDTO> update(@PathVariable Long id, @Valid @RequestBody OrderDTO dto) {
-    return ResponseEntity.ok(orderService.update(id, dto));
+  @PatchMapping("/{id}/pay")
+  @Operation(summary = "Mark order as paid", description = "Marks an order as paid if it hasn't been canceled or shipped yet")
+  public ResponseEntity<OrderResponse> pay(@PathVariable Long id) {
+    return ResponseEntity.ok(orderService.markAsPaid(id));
+  }
+
+  @PatchMapping("/{id}/ship")
+  @Operation(summary = "Mark order as shipped", description = "Marks an order as shipped if it has been paid and hasn't been canceled yet")
+  public ResponseEntity<OrderResponse> ship(@PathVariable Long id) {
+    return ResponseEntity.ok(orderService.shipOrder(id));
   }
 
   @PatchMapping("/{id}/cancel")
   @Operation(summary = "Cancel order",
       description = "Cancels an order if it hasn't been shipped yet")
-  public ResponseEntity<OrderDTO> cancel(@PathVariable Long id) {
+  public ResponseEntity<OrderResponse> cancel(@PathVariable Long id) {
     return ResponseEntity.ok(orderService.cancel(id));
   }
 }
