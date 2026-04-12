@@ -1,6 +1,7 @@
-package com.juliana_barreto.order_management_api.modules.user.entities;
+package com.juliana_barreto.order_management_api.modules.user;
 
-import com.juliana_barreto.order_management_api.modules.order.entities.Order;
+import com.juliana_barreto.order_management_api.modules.order.Order;
+import com.juliana_barreto.order_management_api.shared.exceptions.BusinessException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -59,4 +60,18 @@ public class User implements Serializable {
   @Builder.Default
   @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<Order> orders = new HashSet<>();
+
+  // Business rule: Update contact info in a controlled way
+  public void updateContactInfo(String newEmail, String newPhone) {
+    if (newEmail == null || newEmail.isBlank()) {
+      throw new BusinessException("Email cannot be empty.");
+    }
+    this.email = newEmail;
+    this.phone = newPhone;
+  }
+
+  // Business rule: Clear intent for password changes
+  public void changePassword(String newEncodedPassword) {
+    this.password = newEncodedPassword;
+  }
 }
