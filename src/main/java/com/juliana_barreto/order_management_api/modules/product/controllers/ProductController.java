@@ -8,8 +8,8 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -30,38 +30,37 @@ public class ProductController {
   }
 
   @GetMapping
-  @Operation(summary = "List all", description = "Returns the list of all registered products")
-  public ResponseEntity<List<ProductDTO>> list() {
-    return ResponseEntity.ok(productService.findAll());
+  @Operation(summary = "List all active", description = "Returns a list of all active products with their categories")
+  public ResponseEntity<List<ProductResponse>> listActive() {
+    return ResponseEntity.ok(productService.findAllActive());
   }
 
   @GetMapping("/{id}")
   @Operation(summary = "Find by ID", description = "Returns a specific product by its ID")
-  public ResponseEntity<ProductDTO> findById(@PathVariable Long id) {
+  public ResponseEntity<ProductResponse> findById(@PathVariable Long id) {
     return ResponseEntity.ok(productService.findById(id));
   }
 
   @PostMapping
   @Operation(summary = "Create product", description = "Creates a new product with categories")
-  public ResponseEntity<ProductDTO> create(@Valid @RequestBody ProductDTO dto) {
-    ProductDTO newDto = productService.create(dto);
+  public ResponseEntity<ProductResponse> create(@Valid @RequestBody ProductRequest request) {
+    ProductResponse response = productService.create(request);
     URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-        .path("/{id}").buildAndExpand(newDto.getId()).toUri();
-    return ResponseEntity.created(uri).body(newDto);
+        .path("/{id}").buildAndExpand(response.id()).toUri();
+    return ResponseEntity.created(uri).body(response);
   }
 
   @PutMapping("/{id}")
   @Operation(summary = "Update product",
       description = "Updates product details and category associations")
-  public ResponseEntity<ProductDTO> update(@PathVariable Long id, @Valid @RequestBody ProductDTO dto) {
-    return ResponseEntity.ok(productService.update(id, dto));
+  public ResponseEntity<ProductResponse> update(@PathVariable Long id, @Valid @RequestBody ProductRequest request) {
+    return ResponseEntity.ok(productService.update(id, request));
   }
 
-  @DeleteMapping("/{id}")
-  @Operation(summary = "Delete product",
-      description = "Removes a product (only if not linked to orders)")
-  public ResponseEntity<Void> delete(@PathVariable Long id) {
-    productService.delete(id);
+  @PatchMapping("/{id}/deactivate")
+  @Operation(summary = "Deactivate product", description = "Soft deletes a product")
+  public ResponseEntity<Void> deactivate(@PathVariable Long id) {
+    productService.deactivate(id);
     return ResponseEntity.noContent().build();
   }
 }

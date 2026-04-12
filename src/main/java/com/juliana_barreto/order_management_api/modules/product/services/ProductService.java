@@ -1,18 +1,13 @@
-package com.juliana_barreto.order_management_api.modules.product.services;
+package com.juliana_barreto.order_management_api.modules.product;
 
-import com.juliana_barreto.order_management_api.modules.category.entities.Category;
-import com.juliana_barreto.order_management_api.modules.category.dto.CategoryDTO;
-import com.juliana_barreto.order_management_api.modules.category.repositories.CategoryRepository;
-import com.juliana_barreto.order_management_api.modules.order.entities.Order;
-import com.juliana_barreto.order_management_api.modules.order.repositories.OrderRepository;
-import com.juliana_barreto.order_management_api.modules.product.dto.ProductDTO;
-import com.juliana_barreto.order_management_api.modules.product.entities.Product;
-import com.juliana_barreto.order_management_api.modules.product.repositories.ProductRepository;
-import com.juliana_barreto.order_management_api.shared.exceptions.DatabaseException;
+import com.juliana_barreto.order_management_api.modules.category.Category;
+import com.juliana_barreto.order_management_api.modules.category.CategoryRepository;
+import com.juliana_barreto.order_management_api.modules.category.CategoryResponse;
 import com.juliana_barreto.order_management_api.shared.exceptions.ResourceNotFoundException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import org.springframework.dao.DataIntegrityViolationException;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,102 +16,113 @@ public class ProductService {
 
   private final ProductRepository productRepository;
   private final CategoryRepository categoryRepository;
-  private final OrderRepository orderRepository;
 
-  public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository,
-      OrderRepository orderRepository) {
+  public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
     this.productRepository = productRepository;
     this.categoryRepository = categoryRepository;
-    this.orderRepository = orderRepository;
   }
 
   @Transactional(readOnly = true)
-  public List<ProductDTO> findAll() {
-    List<Product> entities = productRepository.findAllWithCategories();
-    List<ProductDTO> dtos = new ArrayList<>();
+  public List<ProductResponse> findAllActive() {
+    // Fetch only active products using custom repository method
+    List<Product> entities = productRepository.findAllActive();
+    List<ProductResponse> responses = new ArrayList<>();
+
     for (Product entity : entities) {
-      dtos.add(new ProductDTO(entity));
+      responses.add(new ProductResponse(entity));
     }
-    return dtos;
+    return responses;
   }
 
   @Transactional(readOnly = true)
-  public ProductDTO findById(Long id) {
+  public List<ProductResponse> findActiveByCategory(Long categoryId) {
+    // Fetch products filtered by category
+    List<Product> entities = productRepository.findActiveProductsByCategory(categoryId);
+    List<ProductResponse> responses = new ArrayList<>();
+
+    for (Product entity : entities) {
+      responses.add(new ProductResponse(entity));
+    }
+    return responses;
+  }
+
+  @Transactional(readOnly = true)
+  public ProductResponse findById(Long id) {
     Product entity = productRepository.findByIdWithCategories(id)
         .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + id));
-    return new ProductDTO(entity);
+    return new ProductResponse(entity);
   }
 
   @Transactional
-  public ProductDTO create(ProductDTO dto) {
+  public ProductResponse create(ProductRequest request) {
 
     Product entity = new Product();
-    copyDtoToEntity(dto, entity);
+    entity.setName(request.name());
+    entity.setDescription(request.description());
+    entity.setImgUrl(request.imgUrl());
+    entity.updatePrice(request.price());
+
+    handleCategoryAssociation(request.categoryIds(), entity);
+
     entity = productRepository.save(entity);
-    return new ProductDTO(entity);
+    return mapToResponse(entity);
   }
 
   @Transactional
-  public ProductDTO update(Long id, ProductDTO dto) {
+  public ProductResponse update(Long id, ProductRequest request) {
     Product entity = productRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + id));
 
-    entity.setName(dto.getName());
-    entity.setDescription(dto.getDescription());
-    entity.setPrice(dto.getPrice());
-    entity.setImgUrl(dto.getImgUrl());
+    entity.setName(request.name());
+    entity.setDescription(request.description());
+    entity.setImgUrl(request.imgUrl());
+    entity.updatePrice(request.price());
 
-    // Update Category Association
-    if (dto.getCategories() != null) {
-      entity.getCategories().clear();
-      for (CategoryDTO catDto : dto.getCategories()) {
-        Category category = categoryRepository.findById(catDto.getId())
-            .orElseThrow(() -> new ResourceNotFoundException(
-                "Category not found with ID: " + catDto.getId()));
-        entity.getCategories().add(category);
-      }
-    }
+    handleCategoryAssociation(request.categoryIds(), entity);
 
     entity = productRepository.save(entity);
-    return new ProductDTO(entity);
+    return mapToResponse(entity);
   }
 
+  // Soft delete approach replacing the hard delete
   @Transactional
-  public void delete(Long id) {
-    if (!productRepository.existsById(id)) {
-      throw new ResourceNotFoundException("Product not found for deletion.");
-    }
+  public void deactivate(Long id) {
+    Product entity = productRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Product not found for deactivation."));
 
-    List<Order> orders = orderRepository.findOrdersByProductId(id);
-    if (!orders.isEmpty()) {
-      throw new DatabaseException(
-          "Integrity violation: Unable to delete product because it is part of existing orders.");
-    }
-
-    try {
-      productRepository.deleteById(id);
-    } catch (DataIntegrityViolationException e) {
-      throw new DatabaseException(
-          "Integrity violation: Something went wrong during deletion.");
-    }
+    // The entity manages its own state transition
+    entity.deactivate();
+    productRepository.save(entity);
   }
 
-  // Helper method to copy DTO fields to entity
-  private void copyDtoToEntity(ProductDTO dto, Product entity) {
-    entity.setName(dto.getName());
-    entity.setDescription(dto.getDescription());
-    entity.setPrice(dto.getPrice());
-    entity.setImgUrl(dto.getImgUrl());
-
-    // Handle Category Association
-    if (dto.getCategories() != null && !dto.getCategories().isEmpty()) {
-      entity.getCategories().clear();
-      for (CategoryDTO catDto : dto.getCategories()) {
-        Category category = categoryRepository.findById(catDto.getId())
+  private void handleCategoryAssociation(Set<Long> categoryIds, Product entity) {
+    entity.getCategories().clear();
+    if (categoryIds != null && !categoryIds.isEmpty()) {
+      for (Long catId : categoryIds) {
+        Category category = categoryRepository.findById(catId)
             .orElseThrow(() -> new ResourceNotFoundException(
-                "Category not found with ID: " + catDto.getId()));
+                "Category not found with ID: " + catId));
         entity.getCategories().add(category);
       }
     }
+  }
+
+  private ProductResponse mapToResponse(Product entity) {
+    Set<CategoryResponse> categoryResponses = new HashSet<>();
+
+    if (entity.getCategories() != null) {
+      for (Category category : entity.getCategories()) {
+        categoryResponses.add(new CategoryResponse(category));
+      }
+    }
+
+    return new ProductResponse(
+        entity.getId(),
+        entity.getName(),
+        entity.getDescription(),
+        entity.getPrice(),
+        entity.getImgUrl(),
+        categoryResponses
+    );
   }
 }
