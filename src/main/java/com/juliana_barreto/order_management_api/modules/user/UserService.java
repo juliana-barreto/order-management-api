@@ -1,6 +1,5 @@
 package com.juliana_barreto.order_management_api.modules.user;
 
-import com.juliana_barreto.order_management_api.modules.order.OrderRepository;
 import com.juliana_barreto.order_management_api.shared.exceptions.BusinessException;
 import com.juliana_barreto.order_management_api.shared.exceptions.DatabaseException;
 import com.juliana_barreto.order_management_api.shared.exceptions.ResourceNotFoundException;
@@ -17,13 +16,9 @@ public class UserService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
-  private final OrderRepository orderRepository;
-
-  public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, OrderRepository orderRepository) {
+  public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
     this.userRepository = userRepository;
     this.passwordEncoder = passwordEncoder;
-    this.orderRepository = orderRepository;
-
   }
 
   @Transactional(readOnly = true)
