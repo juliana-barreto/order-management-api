@@ -1,5 +1,6 @@
-package com.juliana_barreto.order_management_api.modules.order_item;
+package com.juliana_barreto.order_management_api.modules.order.dto;
 
+import com.juliana_barreto.order_management_api.modules.order.entities.OrderItem;
 import java.math.BigDecimal;
 
 public record OrderItemResponse(

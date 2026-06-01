@@ -1,4 +1,4 @@
-package com.juliana_barreto.order_management_api.modules.order.repositories;
+package com.juliana_barreto.order_management_api.modules.order;
 
 import com.juliana_barreto.order_management_api.modules.order.entities.OrderItem;
 import com.juliana_barreto.order_management_api.modules.order.entities.OrderItemPK;

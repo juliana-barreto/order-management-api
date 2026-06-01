@@ -1,6 +1,5 @@
-package com.juliana_barreto.order_management_api.modules.order;
+package com.juliana_barreto.order_management_api.modules.order.dto;
 
-import com.juliana_barreto.order_management_api.modules.order_item.OrderItemRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

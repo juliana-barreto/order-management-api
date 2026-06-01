@@ -1,13 +1,16 @@
 package com.juliana_barreto.order_management_api.modules.order;
 
-import com.juliana_barreto.order_management_api.modules.order_item.OrderItem;
-import com.juliana_barreto.order_management_api.modules.order_item.OrderItemRequest;
-import com.juliana_barreto.order_management_api.modules.order_item.OrderItemResponse;
+import com.juliana_barreto.order_management_api.modules.order.entities.Order;
+import com.juliana_barreto.order_management_api.modules.order.dto.OrderRequest;
+import com.juliana_barreto.order_management_api.modules.order.dto.OrderResponse;
+import com.juliana_barreto.order_management_api.modules.order.entities.OrderItem;
+import com.juliana_barreto.order_management_api.modules.order.dto.OrderItemRequest;
+import com.juliana_barreto.order_management_api.modules.order.dto.OrderItemResponse;
 import com.juliana_barreto.order_management_api.modules.product.Product;
 import com.juliana_barreto.order_management_api.modules.product.ProductRepository;
 import com.juliana_barreto.order_management_api.modules.user.User;
-import com.juliana_barreto.order_management_api.modules.user.UserRepository;
 import com.juliana_barreto.order_management_api.modules.user.UserResponse;
+import com.juliana_barreto.order_management_api.modules.user.UserRepository;
 import com.juliana_barreto.order_management_api.shared.exceptions.ResourceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;

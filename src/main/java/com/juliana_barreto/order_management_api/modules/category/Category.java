@@ -1,6 +1,6 @@
-package com.juliana_barreto.order_management_api.modules.category.entities;
+package com.juliana_barreto.order_management_api.modules.category;
 
-import com.juliana_barreto.order_management_api.modules.product.entities.Product;
+import com.juliana_barreto.order_management_api.modules.product.Product;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

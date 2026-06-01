@@ -1,7 +1,7 @@
 package com.juliana_barreto.order_management_api.modules.product;
 
 import com.juliana_barreto.order_management_api.modules.category.Category;
-import com.juliana_barreto.order_management_api.modules.order_item.OrderItem;
+import com.juliana_barreto.order_management_api.modules.order.entities.OrderItem;
 import com.juliana_barreto.order_management_api.shared.exceptions.BusinessException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

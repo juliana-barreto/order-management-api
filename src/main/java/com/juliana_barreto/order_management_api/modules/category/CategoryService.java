@@ -1,8 +1,4 @@
-package com.juliana_barreto.order_management_api.modules.category.services;
-
-import com.juliana_barreto.order_management_api.modules.category.dto.CategoryDTO;
-import com.juliana_barreto.order_management_api.modules.category.entities.Category;
-import com.juliana_barreto.order_management_api.modules.category.repositories.CategoryRepository;
+package com.juliana_barreto.order_management_api.modules.category;
 import com.juliana_barreto.order_management_api.shared.exceptions.DatabaseException;
 import com.juliana_barreto.order_management_api.shared.exceptions.ResourceNotFoundException;
 import java.util.ArrayList;

@@ -1,6 +1,4 @@
-package com.juliana_barreto.order_management_api.modules.product.repositories;
-
-import com.juliana_barreto.order_management_api.modules.product.entities.Product;
+package com.juliana_barreto.order_management_api.modules.product;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

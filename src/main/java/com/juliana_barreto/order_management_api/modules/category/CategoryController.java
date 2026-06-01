@@ -1,7 +1,4 @@
-package com.juliana_barreto.order_management_api.modules.category.controllers;
-
-import com.juliana_barreto.order_management_api.modules.category.dto.CategoryDTO;
-import com.juliana_barreto.order_management_api.modules.category.services.CategoryService;
+package com.juliana_barreto.order_management_api.modules.category;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

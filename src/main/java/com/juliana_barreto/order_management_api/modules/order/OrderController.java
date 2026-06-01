@@ -1,7 +1,7 @@
-package com.juliana_barreto.order_management_api.modules.order.controllers;
+package com.juliana_barreto.order_management_api.modules.order;
 
-import com.juliana_barreto.order_management_api.modules.order.dto.OrderDTO;
-import com.juliana_barreto.order_management_api.modules.order.services.OrderService;
+import com.juliana_barreto.order_management_api.modules.order.dto.OrderRequest;
+import com.juliana_barreto.order_management_api.modules.order.dto.OrderResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

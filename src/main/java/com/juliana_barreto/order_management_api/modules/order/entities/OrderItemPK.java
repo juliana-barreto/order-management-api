@@ -1,6 +1,6 @@
 package com.juliana_barreto.order_management_api.modules.order.entities;
 
-import com.juliana_barreto.order_management_api.modules.product.entities.Product;
+import com.juliana_barreto.order_management_api.modules.product.Product;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
