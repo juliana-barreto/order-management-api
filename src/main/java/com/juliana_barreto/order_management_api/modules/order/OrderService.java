@@ -14,22 +14,17 @@ import com.juliana_barreto.order_management_api.modules.user.UserRepository;
 import com.juliana_barreto.order_management_api.shared.exceptions.ResourceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class OrderService {
 
   private final OrderRepository orderRepository;
   private final UserRepository userRepository;
   private final ProductRepository productRepository;
-
-  public OrderService(OrderRepository orderRepository, UserRepository userRepository,
-      ProductRepository productRepository) {
-    this.orderRepository = orderRepository;
-    this.userRepository = userRepository;
-    this.productRepository = productRepository;
-  }
 
   @Transactional(readOnly = true)
   public List<OrderResponse> findAll() {

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,13 +19,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @RequestMapping("/products")
 @Tag(name = "Products", description = "Product management")
+@RequiredArgsConstructor
 public class ProductController {
 
   private final ProductService productService;
-
-  public ProductController(ProductService productService) {
-    this.productService = productService;
-  }
 
   @GetMapping
   @Operation(summary = "List all active", description = "Returns a list of all active products with their categories")

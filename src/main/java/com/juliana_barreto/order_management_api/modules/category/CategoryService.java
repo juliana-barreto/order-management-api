@@ -3,18 +3,16 @@ import com.juliana_barreto.order_management_api.shared.exceptions.DatabaseExcept
 import com.juliana_barreto.order_management_api.shared.exceptions.ResourceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class CategoryService {
 
   private final CategoryRepository categoryRepository;
-
-  public CategoryService(CategoryRepository categoryRepository) {
-    this.categoryRepository = categoryRepository;
-  }
 
   @Transactional(readOnly = true)
   public List<CategoryResponse> findAll() {

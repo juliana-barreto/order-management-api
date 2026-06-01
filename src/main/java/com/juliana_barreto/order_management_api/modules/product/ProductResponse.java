@@ -3,6 +3,7 @@ package com.juliana_barreto.order_management_api.modules.product;
 import com.juliana_barreto.order_management_api.modules.category.Category;
 import com.juliana_barreto.order_management_api.modules.category.CategoryResponse;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,7 +25,7 @@ public record ProductResponse(
         entity.getImgUrl(),
         entity.getCategories() != null
             ? toCategoriesResponse(entity.getCategories())
-            : null
+            : Collections.emptySet()
     );
   }
 

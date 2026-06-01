@@ -8,19 +8,16 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
 
   private final ProductRepository productRepository;
   private final CategoryRepository categoryRepository;
-
-  public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
-    this.productRepository = productRepository;
-    this.categoryRepository = categoryRepository;
-  }
 
   @Transactional(readOnly = true)
   public List<ProductResponse> findAllActive() {

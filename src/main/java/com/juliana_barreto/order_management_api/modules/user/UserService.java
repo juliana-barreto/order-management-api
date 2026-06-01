@@ -5,21 +5,19 @@ import com.juliana_barreto.order_management_api.shared.exceptions.DatabaseExcept
 import com.juliana_barreto.order_management_api.shared.exceptions.ResourceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
-  public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-    this.userRepository = userRepository;
-    this.passwordEncoder = passwordEncoder;
-  }
 
   @Transactional(readOnly = true)
   public List<UserResponse> findAll() {
@@ -48,6 +46,7 @@ public class UserService {
     entity.updateContactInfo(request.email(), request.phone());
     entity.changePassword(passwordEncoder.encode(request.password()));
 
+    entity = userRepository.save(entity);
     return new UserResponse(entity);
   }
 
